@@ -1,18 +1,47 @@
-research_task:
+query_intake_agent_task:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Receive {{natural_language_query}} and {{user_identity}}, validate authorization,
+    maintain follow-up context with {{prior_query_context}}, and prepare sanitized
+    inputs for SQL generation.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    Sanitized natural language query, updated context, or secure error response.
+  agent: query_intake_agent
 
-reporting_task:
+sql_generation_agent_task:
   description: >
-    Review the research context and write a concise report with short sections.
-    Focus on the 5 most important points only.
-    Keep the response compact, clear, and within a few paragraphs.
+    Translate sanitized natural language queries into secure SQL, validate access
+    policies, and classify query complexity.
   expected_output: >
-    A concise markdown report covering the 5 most important findings with short sections.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    Validated SQL query, query complexity classification, or explanatory error response.
+  agent: sql_generation_agent
+
+connectivity_verification_agent_task:
+  description: >
+    Verify Snowflake connectivity via Keyretained before allowing SQL execution.
+  expected_output: >
+    Connectivity status success or failure and any error response.
+  agent: connectivity_verification_agent
+
+query_execution_agent_task:
+  description: >
+    Execute validated SQL queries with complexity-based SLA limits, handling timeouts
+    and errors securely.
+  expected_output: >
+    Tabular query results or timeout/error responses.
+  agent: query_execution_agent
+
+response_generation_agent_task:
+  description: >
+    Interpret results or failures, maintain conversation context, and generate
+    user-facing final responses.
+  expected_output: >
+    Natural language final response describing query results or issues.
+  agent: response_generation_agent
+
+audit_logging_agent_task:
+  description: >
+    Log {{user_identity}} and {{natural_language_query}} along with sanitized and
+    execution metadata for audit and compliance.
+  expected_output: >
+    Structured audit log entry covering the full query lifecycle.
+  agent: audit_logging_agent
